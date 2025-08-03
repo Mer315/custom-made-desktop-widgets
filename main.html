@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Electron Widget</title>
+  <style>
+    body {
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100vw;
+        height:100vh;
+        overflow: hidden;  
+        margin: 0;
+        padding: 0;
+        background:transparent;
+        -webkit-app-region: drag;
+        cursor: grab;
+        user-select: none;
+
+    }
+
+    .main-container {
+        width: 206px;
+        height: 206px;
+        background: #5ec6bd;
+        border-radius: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        transition: box-shadow 0.3s ease;
+        -webkit-app-region: drag;
+        cursor: grab;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.25);
+    }
+    .main-container:hover{
+        box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        transition:box-shadow 0.3s ease;
+    }
+    .grid-container{
+        display:grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(3, 1fr);
+        gap:7px;
+        background: #5ec6bd;
+        width: 187.5px;
+        height: 187.5px;
+        padding: 10px;
+        border-radius: 20px;
+    }
+    button {
+        display:grid;
+        place-items: center;
+        width: 100%;
+        height:100%;
+        margin:0;
+        padding:0;
+        font-size: 50px;
+        border: none;
+        border-radius:10px;
+        background: #fffc98;
+        color: #5ec6bd;
+        font-family: 'Instrument Sans', sans-serif;
+        font-weight: bold;
+        transition: box-shadow 0.3s ease;
+        -webkit-app-region: no-drag;
+        cursor: pointer;
+    }
+    button.blank {
+        background-color: #5ec6bd; /* same as your container background */
+        border: none;
+        cursor: default;
+        pointer-events: none;
+    }
+    button:hover {
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+
+
+  </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="grid-container">
+        <button id="btn0">1</button>
+        <button id="btn1">2</button>
+        <button id="btn2">3</button>
+        <button id="btn3">4</button>
+        <button id="btn4">5</button>
+        <button id="btn5">6</button>
+        <button id="btn6">7</button>
+        <button id="btn7">8</button>
+        <button id="btn8" class="blank"></button> 
+        </div>
+    </div>
+    <script>
+    
+        let grid=[1,2,3,4,5,6,7,8,null];
+        function getrc(idx){
+            return {row:Math.floor(idx/3), col:idx%3};
+        }
+        function rendergrd(){
+            for(let i=0;i<9;i++){
+                const btn = document.getElementById(`btn${i}`);
+                const value = grid[i];
+                if(value === null){
+                    btn.textContent = '';
+                    btn.classList.add('blank');
+                    btn.disabled= true;
+                } else {
+                    btn.textContent = value;
+                    btn.classList.remove('blank');
+                    btn.disabled=false;
+                }
+            }
+        }
+        function movement(idx){
+            const blankidx= grid.indexOf(null);
+            const clicked = getrc(idx);
+            const blank = getrc(blankidx);
+            const rowDiff = Math.abs(clicked.row - blank.row);
+            const colDiff = Math.abs(clicked.col - blank.col);
+            const adj= (rowDiff === 1 && colDiff === 0) || (rowDiff === 0 && colDiff === 1);
+            if(adj){
+                [grid[idx], grid[blankidx]] = [grid[blankidx], grid[idx]];
+                rendergrd();
+            }
+        }
+        function solved(){
+            for(let i=0;i<8;i++){
+                if(grid[i]!==i+1){
+                    return false;
+                }
+            }
+            return grid[8]== null;
+        }
+        function shuffle(){
+            let arr = grid.slice(0,8);
+            for(let i=arr.length-1;i>0;i--){
+                const j=Math.floor(Math.random()*(i+1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            arr.push(null);
+            grid=arr;
+            rendergrd();
+        }
+        function setup(){
+            for(let i=0;i<9;i++){
+                document.getElementById(`btn${i}`).addEventListener('click', () => {
+                    movement(i);
+                    event.stopPropagation();
+                });
+            }
+            document.querySelector('.main-container').addEventListener('click', () => {
+                if(solved()){
+                    shuffle();
+                }
+            });
+            rendergrd();
+        }
+        window.addEventListener('DOMContentLoaded',setup);
+    </script>
+</body>
+</html>
