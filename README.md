@@ -21,4 +21,3 @@ Once built, the widget executable will be available in the `dist` folder and can
 ### 📸 Sample Previews
    -  <img width="261" height="255" alt="image" src="https://github.com/user-attachments/assets/361a2f5a-791f-4e64-adca-7d3805124173" />
    -  <img width="1919" height="1199" alt="image" src="https://github.com/user-attachments/assets/70cf4e3a-b0e1-4d26-a8bb-82084def99a6" />
-
